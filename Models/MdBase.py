@@ -1,5 +1,5 @@
 class MdBase():
-    Id = -1
+    Id: int
 
     def __init__(self) -> None:
         pass

@@ -2,14 +2,14 @@ from EnEnum import EnTipoDocumento
 from MdBase import MdBase
 
 class MdUsuario(MdBase):
-    TipoDocumento = EnTipoDocumento.NA
-    Documento = '000'
-    PrimerNombre = ''
-    SegundoNombre = ''
-    PrimerApellido = ''
-    SegundoApellido = ''
-    Email = ''
-    __NombreCompleto = ''
+    TipoDocumento: int
+    Documento: str
+    PrimerNombre: str
+    SegundoNombre: str
+    PrimerApellido: str
+    SegundoApellido: str
+    Email: str
+    __NombreCompleto:str
 
     def __init__(self, tipoDocumento, documento) -> None:
         super().__init__()

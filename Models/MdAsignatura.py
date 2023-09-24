@@ -1,4 +1,4 @@
 from MdBase import MdBase
 
 class MdAsignatura(MdBase):
-    Nombre = ''
+    Nombre: str
