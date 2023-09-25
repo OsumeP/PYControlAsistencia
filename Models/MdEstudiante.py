@@ -1,7 +1,7 @@
-import pyodbc
-from typing import (List, Self)
 import sys
 sys.path.append("Repository")
+import pyodbc
+from typing import (List, Self)
 from MdUsuario import MdUsuario
 from ClDataBase import ClDataBase
 
@@ -68,6 +68,8 @@ class MdEstudiante(MdUsuario):
            ,PrimerApellido
            ,SegundoApellido
            ,Email
+           ,Password
+           ,Activo
            ,NumeroCarne)
      VALUES
            ({self.TipoDocumento}
@@ -77,6 +79,8 @@ class MdEstudiante(MdUsuario):
            ,'{self.PrimerApellido}'
            ,'{self.SegundoApellido}'
            ,'{self.Email}'
+           ,'123'
+           ,1
            ,'{self.NumeroCarne}')"""
         cursor.execute(strInsert)
         cursor.commit()
@@ -104,14 +108,15 @@ class MdEstudiante(MdUsuario):
         cursor.execute(strUpdate)
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
-
-# aaa = MdEstudiante(1,'341241')
-# aaa.PrimerNombre = 'Astrid'
-# aaa.PrimerApellido = 'Sánchez'
-# aaa.Email = 'test@test.com'
-# aaa.NumeroCarne = '432345'
-# aaa.Foto = bytearray([3])
-# aaa.InsertarRegistro()
-# bbb = MdEstudiante.ObtenerPorId(1)
-# bbb.SegundoNombre = 'Test'
-# bbb.ActualizarRegistro()
+    
+    def ValidarUsuario(usuario: str, password: str):
+        cursor = ClDataBase.OpenConnection()
+        strSearch = f"SELECT * FROM MdDocente WHERE Documento={usuario} AND Password={password} AND Activo=1"
+        cursor.execute(strSearch)
+        cursor.fetchone()
+        if cursor != None:
+            print('Conectado')
+            return True
+        else: 
+            print('Usuario o contraseña incorrectos')
+            return False

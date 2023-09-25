@@ -1,3 +1,4 @@
+from ClDataBase import ClDataBase
 from EnEnum import EnTipoDocumento
 from MdBase import MdBase
 
@@ -9,6 +10,9 @@ class MdUsuario(MdBase):
     PrimerApellido: str
     SegundoApellido: str
     Email: str
+    Password: str
+    Activo: bool
+
     __NombreCompleto:str
 
     def __init__(self, tipoDocumento, documento) -> None:
