@@ -1,8 +1,11 @@
 import sys
+
+from MdInicioSesion import MdInicioSesion
 sys.path.append("Repository")
 import pyodbc
 from typing import (List, Self)
 from MdUsuario import MdUsuario
+
 from ClDataBase import ClDataBase
 
 class MdDocente(MdUsuario):
@@ -93,15 +96,10 @@ class MdDocente(MdUsuario):
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
 
-    def ValidarUsuario(usuario: str, password: str):
+    def ValidarUsuario(mdInicioSesion : MdInicioSesion) -> bool: 
         cursor = ClDataBase.OpenConnection()
-        strSearch = f"SELECT * FROM MdDocente WHERE Documento={usuario} AND Password={password} and Activo=1"
+        strSearch = f"SELECT Id FROM MdDocente WHERE Documento='{mdInicioSesion.Usuario}' AND Password='{mdInicioSesion.Password}' AND Activo=1"
         cursor.execute(strSearch)
-        cursor.fetchone()
-        if cursor != None:
-            print('Conectado')
-            return True
-        else: 
-            print('Usuario o contraseña incorrectos')
-            return False
-MdDocente.ValidarUsuario('80737015', '123')
+        objValor = cursor.fetchval()
+        return objValor != None
+    

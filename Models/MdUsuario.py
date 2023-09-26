@@ -1,9 +1,10 @@
-from ClDataBase import ClDataBase
 from EnEnum import EnTipoDocumento
+from EnEnum import EnTipoUsuario
 from MdBase import MdBase
+from MdInicioSesion import MdInicioSesion
 
 class MdUsuario(MdBase):
-    TipoDocumento: int
+    TipoDocumento: EnTipoDocumento
     Documento: str
     PrimerNombre: str
     SegundoNombre: str
@@ -19,3 +20,11 @@ class MdUsuario(MdBase):
         super().__init__()
         self.TipoDocumento = tipoDocumento
         self.Documento = documento
+    
+    def ValidarUsuario(inicioSesion: MdInicioSesion) -> bool:
+        from MdDocente import MdDocente
+        from MdEstudiante import MdEstudiante
+        if inicioSesion.TipoUsuario == EnTipoUsuario.Docente:
+            return MdDocente.ValidarUsuario(inicioSesion)
+        elif inicioSesion.TipoUsuario == EnTipoUsuario.Estudiante:
+            return MdEstudiante.ValidarUsuario(inicioSesion)

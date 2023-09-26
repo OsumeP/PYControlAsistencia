@@ -1,27 +1,27 @@
 import sys
+from tkinter.ttk import Entry
 sys.path.append("Models")
+from MdUsuario import MdUsuario
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from MdInicioSesion import MdInicioSesion
-from MdDocente import MdDocente
-from MdEstudiante import MdEstudiante
+from EnEnum import EnTipoUsuario
 
 #region Eventos
 
 def btnInicio_onClick():
-    if not(cbTipoCuenta.get() in TipoCuentas):
-        print('Tipo de cuenta no válida')
-        pass
     mdFormulario = MdInicioSesion()
     mdFormulario.Usuario = txtUsuario.get()
     mdFormulario.Password = txtPassword.get()
-    if cbTipoCuenta.get() == TipoCuentas[0]:
-        print('Buscando...')
-        MdDocente.ValidarUsuario(mdFormulario.Usuario, mdFormulario.Password)
+    match cbTipoUsuario.get():
+        case 'Docente':
+            mdFormulario.TipoUsuario = EnTipoUsuario.Docente
+        case 'Estudiante':
+            mdFormulario.TipoUsuario = EnTipoUsuario.Estudiante
+    if MdUsuario.ValidarUsuario(mdFormulario):
+        print('Usuario Autenticado')
     else:
-        MdEstudiante.ValidarUsuario(mdFormulario.Usuario, mdFormulario.Password)
-        print('Buscando...')
-
+        print('Usuario o Constraseña invalida!!')
 
 #endregion
 
@@ -38,11 +38,11 @@ lbTitulo.pack(pady=30)
 lbTipoCuenta = ttk.Label(root,text='Tipo de cuenta:', bootstyle="success")
 lbTipoCuenta.pack(pady=2)
 
-TipoCuentas = ['Docente', 'Estudiante']
+TiposUsuario = ['Docente', 'Estudiante']
 
-cbTipoCuenta = ttk.Combobox(root, style=SUCCESS, values=TipoCuentas)
-cbTipoCuenta.pack(pady=2)
-cbTipoCuenta.current(0)
+cbTipoUsuario = ttk.Combobox(root, style=SUCCESS, state="readonly", values=TiposUsuario)
+cbTipoUsuario.pack(pady=2)
+cbTipoUsuario.current(0)
 
 lbUsuario = ttk.Label(root,text='Usuario:', bootstyle="success")
 lbUsuario.pack(pady=3)

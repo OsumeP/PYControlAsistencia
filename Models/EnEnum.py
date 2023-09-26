@@ -6,3 +6,7 @@ class EnTipoDocumento(Enum):
     CE = 2
     TI = 3
     PT = 4
+
+class EnTipoUsuario(Enum):
+    Docente = 0
+    Estudiante = 1
