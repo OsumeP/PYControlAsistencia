@@ -8,5 +8,6 @@ class EnTipoDocumento(Enum):
     PT = 4
 
 class EnTipoUsuario(Enum):
-    Docente = 0
-    Estudiante = 1
+    Administrador = 0
+    Docente = 1
+    Estudiante = 2

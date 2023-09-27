@@ -18,6 +18,8 @@ def btnInicio_onClick():
             mdFormulario.TipoUsuario = EnTipoUsuario.Docente
         case 'Estudiante':
             mdFormulario.TipoUsuario = EnTipoUsuario.Estudiante
+        case 'Administrador':
+            mdFormulario.TipoUsuario = EnTipoUsuario.Administrador
     if MdUsuario.ValidarUsuario(mdFormulario):
         print('Usuario Autenticado')
     else:
@@ -38,7 +40,7 @@ lbTitulo.pack(pady=30)
 lbTipoCuenta = ttk.Label(root,text='Tipo de cuenta:', bootstyle="success")
 lbTipoCuenta.pack(pady=2)
 
-TiposUsuario = ['Docente', 'Estudiante']
+TiposUsuario = ['Administrador','Docente', 'Estudiante']
 
 cbTipoUsuario = ttk.Combobox(root, style=SUCCESS, state="readonly", values=TiposUsuario)
 cbTipoUsuario.pack(pady=2)

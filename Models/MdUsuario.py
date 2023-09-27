@@ -1,5 +1,6 @@
 from EnEnum import EnTipoDocumento
 from EnEnum import EnTipoUsuario
+from MdAdministrador import MdAdministrador
 from MdBase import MdBase
 from MdInicioSesion import MdInicioSesion
 
@@ -28,3 +29,5 @@ class MdUsuario(MdBase):
             return MdDocente.ValidarUsuario(inicioSesion)
         elif inicioSesion.TipoUsuario == EnTipoUsuario.Estudiante:
             return MdEstudiante.ValidarUsuario(inicioSesion)
+        elif inicioSesion.TipoUsuario == EnTipoUsuario.Administrador:
+            return MdAdministrador.ValidarUsuario(inicioSesion)
