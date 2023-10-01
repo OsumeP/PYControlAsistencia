@@ -4,3 +4,4 @@ class MdInicioSesion():
     Usuario: str
     Password: str
     TipoUsuario: EnTipoUsuario
+    IsLogin: bool

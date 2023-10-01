@@ -1,64 +1,74 @@
-import sys
-from tkinter.ttk import Entry
-sys.path.append("Models")
-from MdUsuario import MdUsuario
+from ttkbootstrap.dialogs import Messagebox, MessageDialog
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from MdUsuario import MdUsuario
 from MdInicioSesion import MdInicioSesion
 from EnEnum import EnTipoUsuario
+import sys
+from tkinter import StringVar
+sys.path.append("Models")
 
-#region Eventos
 
-def btnInicio_onClick():
-    mdFormulario = MdInicioSesion()
-    mdFormulario.Usuario = txtUsuario.get()
-    mdFormulario.Password = txtPassword.get()
-    match cbTipoUsuario.get():
-        case 'Docente':
-            mdFormulario.TipoUsuario = EnTipoUsuario.Docente
-        case 'Estudiante':
-            mdFormulario.TipoUsuario = EnTipoUsuario.Estudiante
-        case 'Administrador':
-            mdFormulario.TipoUsuario = EnTipoUsuario.Administrador
-    if MdUsuario.ValidarUsuario(mdFormulario):
-        print('Usuario Autenticado')
-    else:
-        print('Usuario o Constraseña invalida!!')
+def FrLogin(root: ttk.Window, onCallBack) -> ttk.Toplevel:
 
-#endregion
+    # region Eventos
 
-#region Formulario
+    def btnInicio_onClick():
+        mdInicioSesion = MdInicioSesion()
+        mdInicioSesion.Usuario = txtUsuario.get()
+        mdInicioSesion.Password = txtPassword.get()
+        match cbTipoUsuario.get():
+            case 'Docente':
+                mdInicioSesion.TipoUsuario = EnTipoUsuario.Docente
+            case 'Estudiante':
+                mdInicioSesion.TipoUsuario = EnTipoUsuario.Estudiante
+            case 'Administrador':
+                mdInicioSesion.TipoUsuario = EnTipoUsuario.Administrador
+        if MdUsuario.ValidarUsuario(mdInicioSesion):
+            print('Usuario Autenticado')
+            mdInicioSesion.IsLogin = True
+            frLogin.destroy()
+            onCallBack(mdInicioSesion)
+        else:
+            Messagebox.show_warning(
+                'Usuario o Constraseña invalida!!', parent=frLogin)
 
-root = ttk.Window(themename='flatly')
-root.title('UNAL - Control de Asistencia')
-# root.iconbitmap('Images/Icono.png')
-root.geometry('500x350')
+    # endregion
+    frLogin = ttk.Toplevel(root, topmost=True, resizable=(False, False))
+    frLogin.title('UNAL - Control de Asistencia - Inicio Sesión')
+    frLogin.geometry('480x350')
+    frLogin.columnconfigure(0, weight=1)
+    frLogin.rowconfigure(0, weight=1)
 
-lbTitulo = ttk.Label(root, text='Inicio de Sesión', font=('Helvetica', 24), bootstyle="success")
-lbTitulo.pack(pady=30)
+    frContent = ttk.Frame(frLogin)
+    frContent.grid(column=0, row=0, padx=70, sticky=(N, W, E, S))
 
-lbTipoCuenta = ttk.Label(root,text='Tipo de cuenta:', bootstyle="success")
-lbTipoCuenta.pack(pady=2)
+    lbTitulo = ttk.Label(frContent, text='Inicio de Sesión',
+                         font=('Helvetica', 24), bootstyle="success")
+    lbTitulo.grid(column=0, row=0, pady=50, columnspan=2)
 
-TiposUsuario = ['Administrador','Docente', 'Estudiante']
+    lbTipoCuenta = ttk.Label(
+        frContent, text='Tipo de cuenta:', bootstyle="success", width=20)
+    lbTipoCuenta.grid(column=0, row=1, pady=5)
 
-cbTipoUsuario = ttk.Combobox(root, style=SUCCESS, state="readonly", values=TiposUsuario)
-cbTipoUsuario.pack(pady=2)
-cbTipoUsuario.current(0)
+    TiposUsuario = ['Administrador', 'Docente', 'Estudiante']
+    cbTipoUsuario = ttk.Combobox(
+        frContent, style=SUCCESS, state="readonly", values=TiposUsuario, width=30)
+    cbTipoUsuario.grid(column=1, row=1, pady=5)
+    cbTipoUsuario.current(0)
 
-lbUsuario = ttk.Label(root,text='Usuario:', bootstyle="success")
-lbUsuario.pack(pady=3)
-txtUsuario = ttk.Entry(root, bootstyle="success")
-txtUsuario.pack(pady=2)
+    lbUsuario = ttk.Label(frContent, text='Usuario:', bootstyle="success", width=20)
+    lbUsuario.grid(column=0, row=2, pady=5)
+    txtUsuario = ttk.Entry(frContent, bootstyle="success", width=32)
+    txtUsuario.grid(column=1, row=2, pady=5)
 
-lbPassword = ttk.Label(root,text='Password:', bootstyle="success")
-lbPassword.pack(pady=2)
-txtPassword = ttk.Entry(root, show='*', bootstyle="success")
-txtPassword.pack(pady=2)
+    lbPassword = ttk.Label(frContent, text='Password:', bootstyle="success", width=20)
+    lbPassword.grid(column=0, row=3, pady=5)
+    txtPassword = ttk.Entry(frContent, show='*', bootstyle="success", width=32)
+    txtPassword.grid(column=1, row=3, pady=5)
 
-btnInicio = ttk.Button(root, text='Iniciar sesión', command=btnInicio_onClick,  bootstyle='success')
-btnInicio.pack(pady=10)
+    btnInicio = ttk.Button(frContent, text='Iniciar sesión',
+                           command=btnInicio_onClick,  bootstyle='success', width=30)
+    btnInicio.grid(column=0, row=4, pady=30, columnspan=2)
 
-root.mainloop()
-
-#endregion 
+    frLogin.wait_window()
