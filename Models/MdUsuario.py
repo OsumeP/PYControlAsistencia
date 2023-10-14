@@ -17,7 +17,7 @@ class MdUsuario(MdBase):
 
     __NombreCompleto:str
 
-    def __init__(self, tipoDocumento, documento) -> None:
+    def __init__(self, tipoDocumento: int, documento: str) -> None:
         super().__init__()
         self.TipoDocumento = tipoDocumento
         self.Documento = documento
@@ -31,3 +31,16 @@ class MdUsuario(MdBase):
             return MdEstudiante.ValidarUsuario(inicioSesion)
         elif inicioSesion.TipoUsuario == EnTipoUsuario.Administrador:
             return MdAdministrador.ValidarUsuario(inicioSesion)
+        
+    def ObtenerTipoDocumentoStr(self) -> str:
+        match self.TipoDocumento:
+            case 0:
+                return "NA"
+            case 1:
+                return "CC"
+            case 2:
+                return "CE"
+            case 3:
+                return "TI"
+            case 4:
+                return "PT"

@@ -1,10 +1,13 @@
 import sys
+
 sys.path.append("Models")
+from ttkbootstrap.constants import *
+import ttkbootstrap as ttk
 from EnEnum import EnTipoUsuario
 from FrLogin import FrLogin
 from MdInicioSesion import MdInicioSesion
-from ttkbootstrap.constants import *
-import ttkbootstrap as ttk
+from FrAsignaturas import FrAsignaturas
+from FrEstudiantes import FrEstudiantes
 
 class FrMain():
 
@@ -13,7 +16,11 @@ class FrMain():
     root: ttk.Window
     frameHeader: ttk.Frame
     frameInfo: ttk.Frame
+    frameButtons: ttk.Frame
+    frameTabs: ttk.Frame
+    nbTabControl: ttk.Notebook
     objInicioSesion: MdInicioSesion
+    login: FrLogin
 
     #endregion
 
@@ -24,7 +31,7 @@ class FrMain():
         self.root.title('UNAL - Control de Asistencia')
         self.root.state('zoomed')
         self.MostrarHeader()
-        FrLogin(self)
+        self.login = FrLogin(self)
         self.root.mainloop()
 
     # endregion
@@ -41,6 +48,11 @@ class FrMain():
                         bootstyle='success', font=('Helvetica', 30), width=40)
         title.grid(row=0, column=1)
 
+        self.frameTabs = ttk.Frame(self.root)
+        self.frameTabs.grid(row=2, column=0)
+        self.nbTabControl = ttk.Notebook(self.frameTabs, width=self.root.winfo_screenwidth())
+        self.nbTabControl.pack(expand=1, fill="both")
+
     def MostrarInfo(self):
         self.frameInfo = ttk.Frame(self.frameHeader, width=50)
         self.frameInfo.grid(row=0, column=2)
@@ -54,36 +66,32 @@ class FrMain():
             self.frameInfo, text='Cerrar Sesión', bootstyle='success', command=self.onBtnCerrarSesion_onClick)
         btnCerrarSesion.grid(row=12, column=0)
 
-    def ConfigurarMenu(self):
-        frameButtons = ttk.Frame(self.root)
-        frameButtons.grid(row=2, column=0)
-        match self.objInicioSesion.TipoUsuario:
+    def ConfigurarTabs(self):
+         match self.objInicioSesion.TipoUsuario:
             case EnTipoUsuario.Administrador:
-                btnDocentes = ttk.Button(
-                    frameButtons, text='Administrar docentes', bootstyle='success')
-                btnDocentes.grid(column=0, row=0, padx=5)
-                btnEstudiantes = ttk.Button(
-                    frameButtons, text='Administrar estudiantes', bootstyle='success')
-                btnEstudiantes.grid(column=1, row=0, padx=5)
-                btnAsignaturas = ttk.Button(
-                    frameButtons, text='Administrar asignaturas', bootstyle='success')
-                btnAsignaturas.grid(column=2, row=0, padx=5)
-            case EnTipoUsuario.Estudiante:
-                btnAsistencia = ttk.Button(
-                    frameButtons, text='Consultar asistencia', bootstyle='success')
-                btnAsistencia.grid(column=0, row=0, padx=5)
+                self.CrearTabAsignaturas()
+                self.CrearTabDocentes()
+                self.CrearTabEstudiantes()
+                pass
             case EnTipoUsuario.Docente:
-                btnClase = ttk.Button(
-                    frameButtons, text='Iniciar clase', bootstyle='success')
-                btnClase.grid(column=0, row=0, padx=5)
-                btnAñadir = ttk.Button(
-                    frameButtons, text='Añadir estudiante', bootstyle='success')
-                btnAñadir.grid(column=0, row=0, padx=5)
+                pass
+            case EnTipoUsuario.Estudiante:
+                pass
 
     def onAfterLogin(self, mdInicioSesion: MdInicioSesion):
         self.objInicioSesion = mdInicioSesion
         self.MostrarInfo()
-        self.ConfigurarMenu()
+        self.ConfigurarTabs()
+
+    def CrearTabAsignaturas(self):
+        frAsignaturas = FrAsignaturas(self)
+    
+    def CrearTabDocentes(self):
+        tabDocentes = ttk.Frame(self.nbTabControl)
+        self.nbTabControl.add(tabDocentes, text='Administración de Docentes')
+
+    def CrearTabEstudiantes(self):
+        frEstudiantes = FrEstudiantes(self)
 
     #endregion
 
@@ -92,7 +100,13 @@ class FrMain():
     def onBtnCerrarSesion_onClick(self):
         self.frameInfo.destroy()
         self.objInicioSesion = None
-        FrLogin(self)
+        listKeys = list(self.nbTabControl.children.keys())
+        for key in listKeys:
+            self.nbTabControl.children[key].destroy()
+        self.login.MostrarLogin()
+
+    def onBtnAsignaturas_onClick(self):
+        frAsignaturas = FrAsignaturas(self)
 
     # endregion
 

@@ -30,7 +30,7 @@ class MdEstudiante(MdUsuario):
         return objResult
     
     def ObtenerTodos() -> List[Self]:
-        cursor = ClDataBase.AbrirConexion()
+        cursor = ClDataBase.OpenConnection()
         cursor.execute("SELECT * FROM MdEstudiante")
         cursorData = cursor.fetchall()
         listResult = list()
@@ -88,9 +88,9 @@ class MdEstudiante(MdUsuario):
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
 
-    def EliminarRegistro(self):
+    def EliminarRegistro(id):
         cursor = ClDataBase.OpenConnection()
-        strDelete = f"""DELETE FROM MdEstudiante WHERE Id={self.Id}"""
+        strDelete = f"""DELETE FROM MdEstudiante WHERE Id={id}"""
         cursor.execute(strDelete)
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
@@ -114,6 +114,13 @@ class MdEstudiante(MdUsuario):
     def ValidarUsuario(mdInicioSesion : MdInicioSesion) -> bool:
         cursor = ClDataBase.OpenConnection()
         strSearch = f"SELECT Id FROM MdEstudiante WHERE Documento='{mdInicioSesion.Usuario}' AND Password='{mdInicioSesion.Password}' AND Activo=1"
+        cursor.execute(strSearch)
+        objValor = cursor.fetchval()
+        return objValor != None
+    
+    def ValidarRepeticion(self) -> bool:
+        cursor = ClDataBase.OpenConnection()
+        strSearch = f"SELECT Id FROM MdEstudiante WHERE Documento='{self.Documento}' AND Id!={self.Id}"
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
         return objValor != None
