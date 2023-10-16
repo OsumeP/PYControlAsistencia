@@ -1,16 +1,14 @@
 import sys
 sys.path.append("Models")
-from MdAsignatura import MdAsignatura
-from MdEstudiante import MdEstudiante
+from MdDocente import MdDocente
 from ttkbootstrap.constants import *
 import ttkbootstrap as ttk
 from ttkbootstrap.tableview import Tableview
 from FcUtilidades import CentrarMensaje, CentrarPantalla
 from ttkbootstrap.dialogs import Messagebox
-from FrEstudiantesEditor import FrEstudiantesEditor
-from EnEnum import EnTipoDocumento
+from FrDocentesEditor import FrDocentesEditor
 
-class FrEstudiantes():
+class FrDocentes():
 
     # region Propiedades
 
@@ -33,7 +31,7 @@ class FrEstudiantes():
 
     def CrearToolBar(self)->None:
         self.root = ttk.Frame(self.ObjMain.nbTabControl)
-        self.ObjMain.nbTabControl.add(self.root, text='Administración de Estudiantes')
+        self.ObjMain.nbTabControl.add(self.root, text='Administración de Docentes')
         lbTitulo = ttk.Label(self.root, text="Administración de Docentes",font=('Helvetica', 18), bootstyle="success")
         lbTitulo.grid(row=0, column=0, columnspan=3, pady=5)
         btnAgregar = ttk.Button(self.root,text="Agregar", bootstyle='success', command=self.onBtnAgregarRegistro_onClick)
@@ -44,10 +42,10 @@ class FrEstudiantes():
         btnEliminar.grid(row=1, column=2, padx=20, pady=20)
 
     def CargarDatos(self) -> list[list]:
-        listaAsignaturas = MdEstudiante.ObtenerTodos()
+        listaDocentes = MdDocente.ObtenerTodos()
         rowdata = []
-        for i in listaAsignaturas:
-            rowdata.append([i.Id, i.ObtenerTipoDocumentoStr(), i.Documento, i.PrimerNombre, i.SegundoNombre, i.PrimerApellido, i.SegundoApellido, i.Email, i.NumeroCarne])
+        for i in listaDocentes:
+            rowdata.append([i.Id, i.ObtenerTipoDocumentoStr(), i.Documento, i.PrimerNombre, i.SegundoNombre, i.PrimerApellido, i.SegundoApellido, i.Email, i.TarjetaProfesional])
         return rowdata
 
     def MostrarLista(self, rowdata: list[tuple]):
@@ -60,7 +58,7 @@ class FrEstudiantes():
             "PrimerApellido",
             "SegundoApellido",
             "Email",
-            "NúmeroCarne",
+            "TarjetaProfesional",
         ]
 
         self.table = Tableview(master=self.root,paginated=True, searchable=True, rowdata=rowdata, bootstyle=PRIMARY,coldata=coldata)
@@ -77,12 +75,12 @@ class FrEstudiantes():
     # region Eventos
 
     def onBtnAgregarRegistro_onClick(self):
-        frEditor = FrEstudiantesEditor(self, 0)
+        frEditor = FrDocentesEditor(self, 0)
 
     def onBtnEditarRegistro_onClick(self):
         row = self.table.get_rows(selected=True)[0]
         id = row.values[0]
-        rEditor = FrEstudiantesEditor(self, id)
+        rEditor = FrDocentesEditor(self, id)
 
     def onBtnEliminarRegistro_onClick(self):
         keywords = CentrarMensaje(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 250, 180)
@@ -90,7 +88,7 @@ class FrEstudiantes():
         if confirmacion == "Yes":
             row = self.table.get_rows(selected=True)[0]
             id = row.values[0]
-            MdEstudiante.EliminarRegistro(id)
+            MdDocente.EliminarRegistro(id)
             self.ActualizarDatos()
 
     # endregion

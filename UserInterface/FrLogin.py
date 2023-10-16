@@ -6,7 +6,7 @@ from ttkbootstrap.constants import *
 from MdUsuario import MdUsuario
 from MdInicioSesion import MdInicioSesion
 from EnEnum import EnTipoUsuario
-from FcUtilidades import CentrarPantalla
+from FcUtilidades import CentrarPantalla, CentrarMensaje
 
 class FrLogin():
     objMain: any
@@ -79,5 +79,6 @@ class FrLogin():
             self.root.destroy()
             self.objMain.onAfterLogin(mdInicioSesion)
         else:
-            warning = Messagebox.show_warning('Usuario o Constraseña invalida!!', parent=self.root, title='UNAL')
+            keywords = CentrarMensaje(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 250, 180)
+            warning = Messagebox.show_warning('Usuario o Constraseña invalida!!', parent=self.root, title='UNAL', **keywords)
     # endregion

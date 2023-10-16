@@ -74,9 +74,9 @@ class MdDocente(MdUsuario):
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
 
-    def EliminarRegistro(self):
+    def EliminarRegistro(id: int):
         cursor = ClDataBase.OpenConnection()
-        strDelete = f"""DELETE FROM MdDocente WHERE Id={self.Id}"""
+        strDelete = f"""DELETE FROM MdDocente WHERE Id={id}"""
         cursor.execute(strDelete)
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
@@ -100,6 +100,13 @@ class MdDocente(MdUsuario):
     def ValidarUsuario(mdInicioSesion : MdInicioSesion) -> bool: 
         cursor = ClDataBase.OpenConnection()
         strSearch = f"SELECT Id FROM MdDocente WHERE Documento='{mdInicioSesion.Usuario}' AND Password='{mdInicioSesion.Password}' AND Activo=1"
+        cursor.execute(strSearch)
+        objValor = cursor.fetchval()
+        return objValor != None
+    
+    def ValidarRepeticion(self) -> bool:
+        cursor = ClDataBase.OpenConnection()
+        strSearch = f"SELECT Id FROM MdDocente WHERE Documento='{self.Documento}' AND Id!={self.Id}"
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
         return objValor != None

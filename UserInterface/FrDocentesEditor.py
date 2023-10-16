@@ -1,26 +1,27 @@
 import sys
+
 sys.path.append("Models")
 from ttkbootstrap.dialogs import Messagebox, MessageDialog
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from MdEstudiante import MdEstudiante
+from MdDocente import MdDocente
 from FcUtilidades import CentrarMensaje, CentrarPantalla
 
-class FrEstudiantesEditor():
+class FrDocentesEditor():
 
     # region Propiedades
 
     objPadre: any
     root: ttk.Toplevel
     idObjeto: int
-    Estudiante: MdEstudiante
+    Docente: MdDocente
     cbTipoDocumento: ttk.Combobox
     txtDocumento: ttk.Entry
     txtPrimerNombre: ttk.Entry
     txtSegundoNombre: ttk.Entry
     txtPrimerApellido: ttk.Entry
     txtSegundoApellido: ttk.Entry
-    txtNumeroCarne: ttk.Entry
+    txtTarjetaProfesional: ttk.Entry
     txtEmail: ttk.Entry
 
     # endregion
@@ -37,19 +38,19 @@ class FrEstudiantesEditor():
 
     def InstanciarObjeto(self):
         if self.idObjeto <= 0:
-            self.Estudiante = MdEstudiante(0, "")
-            self.Estudiante.EstablecerId(0)
-            self.Estudiante.Documento = ""
-            self.Estudiante.PrimerNombre = ""
-            self.Estudiante.SegundoNombre = ""
-            self.Estudiante.PrimerApellido = ""
-            self.Estudiante.SegundoApellido = ""
-            self.Estudiante.Email = ""
-            self.Estudiante.NumeroCarne = ""
-            self.Estudiante.TipoDocumento = 0
+            self.Docente = MdDocente(0, "")
+            self.Docente.EstablecerId(0)
+            self.Docente.Documento = ""
+            self.Docente.PrimerNombre = ""
+            self.Docente.SegundoNombre = ""
+            self.Docente.PrimerApellido = ""
+            self.Docente.SegundoApellido = ""
+            self.Docente.Email = ""
+            self.Docente.TarjetaProfesional = ""
+            self.Docente.TipoDocumento = 0
 
         else:
-            self.Estudiante = MdEstudiante.ObtenerPorId(self.idObjeto)
+            self.Docente = MdDocente.ObtenerPorId(self.idObjeto)
 
     def MostrarEditor(self):
         self.root = ttk.Toplevel(self.objPadre.root, topmost=True, resizable=(False, False))
@@ -57,18 +58,18 @@ class FrEstudiantesEditor():
         self.root.geometry(CentrarPantalla(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 950, 500))
         
         lbId = ttk.Label(self.root, text="Id: ", font=('Helvetica', 16), bootstyle="success")
-        lbId.grid(row=0, column=0,pady=20)
+        lbId.grid(row=0, column=0, pady=10)
 
-        lbIdInt = ttk.Label(self.root, text=self.Estudiante.Id, font=('Helvetica', 16), bootstyle="success")
-        lbIdInt.grid(row=0, column=1)
+        lbIdInt = ttk.Label(self.root, text=self.Docente.Id, font=('Helvetica', 16), bootstyle="success")
+        lbIdInt.grid(row=0, column=1, pady=10)
 
         lbTipoDocumento = ttk.Label(self.root, text="Tipo de Documento:", font=('Helvetica', 16), bootstyle="success")
-        lbTipoDocumento.grid(row=1, column=0,padx=20, pady=20)
+        lbTipoDocumento.grid(row=1, column=0, padx=20, pady=20)
 
         tiposDocumento = ["CC", "CE", "TI", "PT"]
         self.cbTipoDocumento = ttk.Combobox(self.root, bootstyle="SUCCESS", width=12,  state="readonly", values=tiposDocumento)
-        self.cbTipoDocumento.grid(row=1,column=1, padx=20)
-        match self.Estudiante.TipoDocumento:
+        self.cbTipoDocumento.grid(row=1,column=1)
+        match self.Docente.TipoDocumento:
             case 0:
                 self.cbTipoDocumento.current(0)
             case 1:
@@ -84,55 +85,55 @@ class FrEstudiantesEditor():
         lbDocumento.grid(row=1, column=2, padx=20)
 
         self.txtDocumento = ttk.Entry(self.root, bootstyle="success", width=32)
-        self.txtDocumento.insert(0, self.Estudiante.Documento)
+        self.txtDocumento.insert(0, self.Docente.Documento)
         self.txtDocumento.grid(row=1, column=3)
 
         lbPrimerNombre = ttk.Label(self.root, text="Primer Nombre:", font=('Helvetica', 16), bootstyle="success")
-        lbPrimerNombre.grid(row=2, column=0,padx=20, pady=20)
+        lbPrimerNombre.grid(row=2, column=0, padx=20, pady=20)
 
         self.txtPrimerNombre = ttk.Entry(self.root, bootstyle="success", width=32)
-        self.txtPrimerNombre.insert(0, self.Estudiante.PrimerNombre)
+        self.txtPrimerNombre.insert(0, self.Docente.PrimerNombre)
         self.txtPrimerNombre.grid(row=2, column=1, padx=20)
 
         lbSegundoNombre = ttk.Label(self.root, text="Segundo Nombre:", font=('Helvetica', 16), bootstyle="success")
         lbSegundoNombre.grid(row=2, column=2, padx=20)
 
         self.txtSegundoNombre = ttk.Entry(self.root, bootstyle="success", width=32)
-        self.txtSegundoNombre.insert(0, self.Estudiante.SegundoNombre)
+        self.txtSegundoNombre.insert(0, self.Docente.SegundoNombre)
         self.txtSegundoNombre.grid(row=2, column=3)
 
         lbPrimerApellido = ttk.Label(self.root, text="Primer Apellido:", font=('Helvetica', 16), bootstyle="success")
-        lbPrimerApellido.grid(row=3, column=0,padx=20, pady=20)
+        lbPrimerApellido.grid(row=3, column=0, padx=20, pady=20)
 
         self.txtPrimerApellido = ttk.Entry(self.root, bootstyle="success", width=32)
-        self.txtPrimerApellido.insert(0, self.Estudiante.PrimerApellido)
+        self.txtPrimerApellido.insert(0, self.Docente.PrimerApellido)
         self.txtPrimerApellido.grid(row=3, column=1, padx=20)
 
         lbSegundoApellido = ttk.Label(self.root, text="Segundo Apellido:", font=('Helvetica', 16), bootstyle="success")
         lbSegundoApellido.grid(row=3, column=2, padx=20)
 
         self.txtSegundoApellido = ttk.Entry(self.root, bootstyle="success", width=32)
-        self.txtSegundoApellido.insert(0, self.Estudiante.SegundoApellido)
+        self.txtSegundoApellido.insert(0, self.Docente.SegundoApellido)
         self.txtSegundoApellido.grid(row=3, column=3)
 
-        lbNumeroCarne = ttk.Label(self.root, text="Número de Carné:", font=('Helvetica', 16), bootstyle="success")
-        lbNumeroCarne.grid(row=4, column=0,padx=20, pady=20)
+        lbTarjetaProfesional = ttk.Label(self.root, text="Tarjeta Profesional:", font=('Helvetica', 16), bootstyle="success")
+        lbTarjetaProfesional.grid(row=4, column=0, padx=20, pady=20)
 
-        self.txtNumeroCarne = ttk.Entry(self.root, bootstyle="success", width=32)
-        self.txtNumeroCarne.insert(0, self.Estudiante.NumeroCarne)
-        self.txtNumeroCarne.grid(row=4, column=1, padx=20)
+        self.txtTarjetaProfesional = ttk.Entry(self.root, bootstyle="success", width=32)
+        self.txtTarjetaProfesional.insert(0, self.Docente.TarjetaProfesional)
+        self.txtTarjetaProfesional.grid(row=4, column=1, padx=20)
 
         lbEmail = ttk.Label(self.root, text="Email:", font=('Helvetica', 16), bootstyle="success")
         lbEmail.grid(row=4, column=2, padx=20)
 
         self.txtEmail = ttk.Entry(self.root, bootstyle="success", width=32)
-        self.txtEmail.insert(0, self.Estudiante.Email)
+        self.txtEmail.insert(0, self.Docente.Email)
         self.txtEmail.grid(row=4, column=3, padx=20)
 
-        btnGrabar = ttk.Button(self.root, text="Grabar", bootstyle="success", command=self.onBtnGrabar_onClick)
+        btnGrabar = ttk.Button(self.root, text="Grabar", bootstyle="success", command=self.onBtnGrabar_onClick, width=20)
         btnGrabar.grid(row=5, column=1, padx=20, pady=20)
-        btnCancelar = ttk.Button(self.root, text="Cancelar", bootstyle="danger", command=self.onBtnCancelar_onClick)
-        btnCancelar.grid(row=5, column=3, padx=20)
+        btnCancelar = ttk.Button(self.root, text="Cancelar", bootstyle="danger", command=self.onBtnCancelar_onClick, width=20)
+        btnCancelar.grid(row=5, column=3)
     
     # region Eventos
 
@@ -148,27 +149,27 @@ class FrEstudiantesEditor():
             case "PT": 
                 numTipoDocumento = 4
             
-        self.Estudiante.TipoDocumento = numTipoDocumento
-        self.Estudiante.Documento = self.txtDocumento.get()
-        self.Estudiante.NumeroCarne = self.txtNumeroCarne.get()
-        self.Estudiante.PrimerNombre = self.txtPrimerNombre.get()
-        self.Estudiante.SegundoNombre = self.txtSegundoNombre.get()
-        self.Estudiante.PrimerApellido = self.txtPrimerApellido.get()
-        self.Estudiante.SegundoApellido = self.txtSegundoApellido.get()
-        self.Estudiante.Email = self.txtEmail.get()
+        self.Docente.TipoDocumento = numTipoDocumento
+        self.Docente.Documento = self.txtDocumento.get()
+        self.Docente.TarjetaProfesional = self.txtTarjetaProfesional.get()
+        self.Docente.PrimerNombre = self.txtPrimerNombre.get()
+        self.Docente.SegundoNombre = self.txtSegundoNombre.get()
+        self.Docente.PrimerApellido = self.txtPrimerApellido.get()
+        self.Docente.SegundoApellido = self.txtSegundoApellido.get()
+        self.Docente.Email = self.txtEmail.get()
 
-        if not(self.Estudiante.ValidarRepeticion()):
+        if not(self.Docente.ValidarRepeticion()):
             if self.idObjeto <= 0:
-                self.Estudiante.InsertarRegistro()
+                self.Docente.InsertarRegistro()
             else:
-                self.Estudiante.ActualizarRegistro()    
+                self.Docente.ActualizarRegistro()    
             keywords = CentrarMensaje(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 250, 180)
             Messagebox.show_info("Registro grabado correctamente!", parent=self.root, title='UNAL', **keywords)
             self.objPadre.ActualizarDatos()
             self.root.destroy()
         else:
             keywords = CentrarMensaje(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 250, 180)
-            Messagebox.show_warning('Ya existe un estudiante con este documento!', parent=self.root, title='UNAL', **keywords)
+            Messagebox.show_warning('Ya existe un docente con este documento!', parent=self.root, title='UNAL', **keywords)
 
     def onBtnCancelar_onClick(self):
         self.root.destroy()

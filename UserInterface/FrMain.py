@@ -8,6 +8,7 @@ from FrLogin import FrLogin
 from MdInicioSesion import MdInicioSesion
 from FrAsignaturas import FrAsignaturas
 from FrEstudiantes import FrEstudiantes
+from FrDocentes import FrDocentes
 
 class FrMain():
 
@@ -87,9 +88,7 @@ class FrMain():
         frAsignaturas = FrAsignaturas(self)
     
     def CrearTabDocentes(self):
-        tabDocentes = ttk.Frame(self.nbTabControl)
-        self.nbTabControl.add(tabDocentes, text='Administración de Docentes')
-
+        FrDocentes(self)
     def CrearTabEstudiantes(self):
         frEstudiantes = FrEstudiantes(self)
 

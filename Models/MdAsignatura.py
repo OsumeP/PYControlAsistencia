@@ -51,7 +51,7 @@ class MdAsignatura(MdBase):
 
     def ValidarAsignatura(self) -> bool: 
         cursor = ClDataBase.OpenConnection()
-        strSearch = f"SELECT Id FROM MdAsignatura WHERE Nombre='{self.Nombre}'"
+        strSearch = f"SELECT Id FROM MdAsignatura WHERE Nombre='{self.Nombre}' AND Id != {self.Id}"
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
         return objValor != None
