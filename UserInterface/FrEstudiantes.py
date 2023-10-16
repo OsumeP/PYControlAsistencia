@@ -35,13 +35,14 @@ class FrEstudiantes():
         self.root = ttk.Frame(self.ObjMain.nbTabControl)
         self.ObjMain.nbTabControl.add(self.root, text='Administración de Estudiantes')
         lbTitulo = ttk.Label(self.root, text="Administración de Docentes",font=('Helvetica', 18), bootstyle="success")
+        wdButton = int((self.root.winfo_screenwidth() - 120) / 6 /3)
         lbTitulo.grid(row=0, column=0, columnspan=3, pady=5)
-        btnAgregar = ttk.Button(self.root,text="Agregar", bootstyle='success', command=self.onBtnAgregarRegistro_onClick)
-        btnAgregar.grid(row=1, column=0, padx=20, pady=20)
-        btnEditar = ttk.Button(self.root,text="Editar", bootstyle='info', command=self.onBtnEditarRegistro_onClick)
-        btnEditar.grid(row=1, column=1, padx=20, pady=20)
-        btnEliminar = ttk.Button(self.root,text="Eliminar", bootstyle='danger', command=self.onBtnEliminarRegistro_onClick)
-        btnEliminar.grid(row=1, column=2, padx=20, pady=20)
+        btnAgregar = ttk.Button(self.root,text="Agregar", bootstyle='success', command=self.onBtnAgregarRegistro_onClick, width=wdButton)
+        btnAgregar.grid(row=1, column=0, padx=5, pady=5)
+        btnEditar = ttk.Button(self.root,text="Editar", bootstyle='info', command=self.onBtnEditarRegistro_onClick, width=wdButton)
+        btnEditar.grid(row=1, column=1, padx=5, pady=5)
+        btnEliminar = ttk.Button(self.root,text="Eliminar", bootstyle='danger', command=self.onBtnEliminarRegistro_onClick, width=wdButton)
+        btnEliminar.grid(row=1, column=2, padx=5, pady=5)
 
     def CargarDatos(self) -> list[list]:
         listaAsignaturas = MdEstudiante.ObtenerTodos()
@@ -51,16 +52,17 @@ class FrEstudiantes():
         return rowdata
 
     def MostrarLista(self, rowdata: list[tuple]):
+        wdButton = int((self.root.winfo_screenwidth() - 20) / 9)
         coldata = [
-            "Id",
-            "TipoDocumento",
-            "Documento",
-            "PrimerNombre",
-            "SegundoNombre",
-            "PrimerApellido",
-            "SegundoApellido",
-            "Email",
-            "NúmeroCarne",
+            {"text": "Id", "stretch": False, "width":wdButton},
+            {"text": "TipoDocumento", "stretch": False, "width":wdButton},
+            {"text": "Documento", "stretch": False, "width":wdButton},
+            {"text": "PrimerNombre", "stretch": False, "width":wdButton},
+            {"text": "SegundoNombre", "stretch": False, "width":wdButton},
+            {"text": "PrimerApellido", "stretch": False, "width":wdButton},
+            {"text": "SegundoApellido", "stretch": False, "width":wdButton},
+            {"text": "Email", "stretch": False, "width":wdButton},
+            {"text": "NúmeroCarne", "stretch": False, "width":wdButton},
         ]
 
         self.table = Tableview(master=self.root,paginated=True, searchable=True, rowdata=rowdata, bootstyle=PRIMARY,coldata=coldata)
