@@ -45,6 +45,10 @@ class FrMain():
         logo = ttk.PhotoImage(file="UserInterface\Images\Logo.png")
         labelLogo = ttk.Label(self.frameHeader, image=logo, width=30)
         labelLogo.grid(row=0, column=0)
+        labelLogo.image = logo
+        labelLogo.configure(image=logo)
+        labelLogo.grid(row=0, column=0)
+
         title = ttk.Label(self.frameHeader, text="UNAL - Sistema de asistencia",
                         bootstyle='success', font=('Helvetica', 30), width=40)
         title.grid(row=0, column=1)

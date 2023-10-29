@@ -2,6 +2,7 @@ import sys
 
 from MdInicioSesion import MdInicioSesion
 sys.path.append("Repository")
+sys.path.append("FaceRecognition")
 import pyodbc
 from typing import (List, Self)
 from MdUsuario import MdUsuario
@@ -10,11 +11,13 @@ from ClDataBase import ClDataBase
 class MdEstudiante(MdUsuario):
 
     NumeroCarne : str
-    Foto : bytearray
+    Foto : bytes
     Vector : any
 
     def __init__(self, tipoDocumento, documento) -> None:
         super().__init__(tipoDocumento, documento)
+        self.Foto = None
+        self.Vector = None
 
     def __CargarRegistro(row: pyodbc.Row) -> Self:
         if row == None:
@@ -27,6 +30,7 @@ class MdEstudiante(MdUsuario):
         objResult.SegundoApellido = row.SegundoApellido
         objResult.Email = row.Email
         objResult.NumeroCarne = row.NumeroCarne
+        objResult.Foto = row.Foto
         return objResult
     
     def ObtenerTodos() -> List[Self]:
@@ -72,7 +76,8 @@ class MdEstudiante(MdUsuario):
            ,Email
            ,Password
            ,Activo
-           ,NumeroCarne)
+           ,NumeroCarne
+           ,Foto)
      VALUES
            ({self.TipoDocumento}
            ,'{self.Documento}'
@@ -83,8 +88,9 @@ class MdEstudiante(MdUsuario):
            ,'{self.Email}'
            ,'123'
            ,1
-           ,'{self.NumeroCarne}')"""
-        cursor.execute(strInsert)
+           ,'{self.NumeroCarne}'
+           ,?)"""
+        cursor.execute(strInsert, pyodbc.Binary(self.Foto))
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
 
@@ -105,9 +111,10 @@ class MdEstudiante(MdUsuario):
             PrimerApellido= '{self.PrimerApellido}', 
             SegundoApellido= '{self.SegundoApellido}', 
             Email= '{self.Email}', 
-            NumeroCarne= '{self.NumeroCarne}'
+            NumeroCarne= '{self.NumeroCarne}',
+            Foto=?
             WHERE Id= {self.Id}"""  
-        cursor.execute(strUpdate)
+        cursor.execute(strUpdate, pyodbc.Binary(self.Foto))
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
     
@@ -124,3 +131,13 @@ class MdEstudiante(MdUsuario):
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
         return objValor != None
+    
+    def AsignarFotoVector(self):
+        from MdFaceRecognition import MdFaceRecognition
+        reconocedor = MdFaceRecognition(self)
+        reconocedor.CapturarRostro()
+    
+    def SubirFoto(self, filePath: str):
+        from MdFaceRecognition import MdFaceRecognition
+        reconocedor = MdFaceRecognition(self)
+        reconocedor.AnalizarImagen(filePath)

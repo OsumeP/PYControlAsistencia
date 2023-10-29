@@ -32,26 +32,26 @@ class FrAsignaturasEditor():
 
     def MostrarEditor(self):
         self.root = ttk.Toplevel(self.ObjMain.root, topmost=True, resizable=(False, False))
-        self.root.title = "Creación asignatura"
-        self.root.geometry(CentrarPantalla(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 500, 400))
+        self.root.title("Creación/edición asignatura")
+        self.root.geometry(CentrarPantalla(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 400, 200))
 
         lbId = ttk.Label(self.root, text="Id: ", font=('Helvetica', 16), bootstyle="success")
-        lbId.grid(row=0, column=0)
+        lbId.grid(row=0, column=0, padx=20, pady=5)
 
         lbIdInt = ttk.Label(self.root, text=self.ObjId, font=('Helvetica', 16), bootstyle="success")
-        lbIdInt.grid(row=0, column=1)
+        lbIdInt.grid(row=0, column=1, padx=20)
 
         lbNombre = ttk.Label(self.root, text="Nombre:", font=('Helvetica', 16), bootstyle="success")
-        lbNombre.grid(row=1, column=0)
+        lbNombre.grid(row=1, column=0, padx=20, pady=5)
 
         self.txtNombre = ttk.Entry(self.root, bootstyle="success", width=32)
         self.txtNombre.insert(string=self.Asignatura.Nombre, index=0)
-        self.txtNombre.grid(row=1, column=1)
+        self.txtNombre.grid(row=1, column=1, padx=20)
 
         self.btnCrear = ttk.Button(self.root, text="Grabar", bootstyle="success", command=self.onBtnGrabarAsignatura_onClick)
-        self.btnCrear.grid(row=2, column=0)
+        self.btnCrear.grid(row=2, column=0, padx=20, pady=5)
         btnCancelar = ttk.Button(self.root, text="Cancelar", bootstyle="danger", command=self.onBtnCancelar_onClick)
-        btnCancelar.grid(row=2, column=1)
+        btnCancelar.grid(row=2, column=1, padx=20)
 
     def InstanciarAsignatura(self):
         if self.ObjId <= 0:

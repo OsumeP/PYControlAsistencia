@@ -54,17 +54,17 @@ class FrDocentesEditor():
 
     def MostrarEditor(self):
         self.root = ttk.Toplevel(self.objPadre.root, topmost=True, resizable=(False, False))
-        self.root.title = "Creación/Edición estudiante"
-        self.root.geometry(CentrarPantalla(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 950, 500))
+        self.root.title("Creación/Edición Docente")
+        self.root.geometry(CentrarPantalla(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 950, 400))
         
         lbId = ttk.Label(self.root, text="Id: ", font=('Helvetica', 16), bootstyle="success")
-        lbId.grid(row=0, column=0, pady=10)
+        lbId.grid(row=0, column=0, pady=5)
 
         lbIdInt = ttk.Label(self.root, text=self.Docente.Id, font=('Helvetica', 16), bootstyle="success")
-        lbIdInt.grid(row=0, column=1, pady=10)
+        lbIdInt.grid(row=0, column=1, pady=5)
 
         lbTipoDocumento = ttk.Label(self.root, text="Tipo de Documento:", font=('Helvetica', 16), bootstyle="success")
-        lbTipoDocumento.grid(row=1, column=0, padx=20, pady=20)
+        lbTipoDocumento.grid(row=1, column=0, padx=20, pady=5)
 
         tiposDocumento = ["CC", "CE", "TI", "PT"]
         self.cbTipoDocumento = ttk.Combobox(self.root, bootstyle="SUCCESS", width=12,  state="readonly", values=tiposDocumento)
@@ -82,46 +82,46 @@ class FrDocentesEditor():
                 self.cbTipoDocumento.current(3)
         
         lbDocumento = ttk.Label(self.root, text="Documento:", font=('Helvetica', 16), bootstyle="success")
-        lbDocumento.grid(row=1, column=2, padx=20)
+        lbDocumento.grid(row=1, column=2, padx=5)
 
         self.txtDocumento = ttk.Entry(self.root, bootstyle="success", width=32)
         self.txtDocumento.insert(0, self.Docente.Documento)
         self.txtDocumento.grid(row=1, column=3)
 
         lbPrimerNombre = ttk.Label(self.root, text="Primer Nombre:", font=('Helvetica', 16), bootstyle="success")
-        lbPrimerNombre.grid(row=2, column=0, padx=20, pady=20)
+        lbPrimerNombre.grid(row=2, column=0, padx=20, pady=5)
 
         self.txtPrimerNombre = ttk.Entry(self.root, bootstyle="success", width=32)
         self.txtPrimerNombre.insert(0, self.Docente.PrimerNombre)
-        self.txtPrimerNombre.grid(row=2, column=1, padx=20)
+        self.txtPrimerNombre.grid(row=2, column=1, padx=5)
 
         lbSegundoNombre = ttk.Label(self.root, text="Segundo Nombre:", font=('Helvetica', 16), bootstyle="success")
-        lbSegundoNombre.grid(row=2, column=2, padx=20)
+        lbSegundoNombre.grid(row=2, column=2, padx=10)
 
         self.txtSegundoNombre = ttk.Entry(self.root, bootstyle="success", width=32)
         self.txtSegundoNombre.insert(0, self.Docente.SegundoNombre)
         self.txtSegundoNombre.grid(row=2, column=3)
 
         lbPrimerApellido = ttk.Label(self.root, text="Primer Apellido:", font=('Helvetica', 16), bootstyle="success")
-        lbPrimerApellido.grid(row=3, column=0, padx=20, pady=20)
+        lbPrimerApellido.grid(row=3, column=0, padx=20, pady=5)
 
         self.txtPrimerApellido = ttk.Entry(self.root, bootstyle="success", width=32)
         self.txtPrimerApellido.insert(0, self.Docente.PrimerApellido)
-        self.txtPrimerApellido.grid(row=3, column=1, padx=20)
+        self.txtPrimerApellido.grid(row=3, column=1, padx=10)
 
         lbSegundoApellido = ttk.Label(self.root, text="Segundo Apellido:", font=('Helvetica', 16), bootstyle="success")
-        lbSegundoApellido.grid(row=3, column=2, padx=20)
+        lbSegundoApellido.grid(row=3, column=2, padx=10)
 
         self.txtSegundoApellido = ttk.Entry(self.root, bootstyle="success", width=32)
         self.txtSegundoApellido.insert(0, self.Docente.SegundoApellido)
         self.txtSegundoApellido.grid(row=3, column=3)
 
         lbTarjetaProfesional = ttk.Label(self.root, text="Tarjeta Profesional:", font=('Helvetica', 16), bootstyle="success")
-        lbTarjetaProfesional.grid(row=4, column=0, padx=20, pady=20)
+        lbTarjetaProfesional.grid(row=4, column=0, padx=20, pady=5)
 
         self.txtTarjetaProfesional = ttk.Entry(self.root, bootstyle="success", width=32)
         self.txtTarjetaProfesional.insert(0, self.Docente.TarjetaProfesional)
-        self.txtTarjetaProfesional.grid(row=4, column=1, padx=20)
+        self.txtTarjetaProfesional.grid(row=4, column=1, padx=10)
 
         lbEmail = ttk.Label(self.root, text="Email:", font=('Helvetica', 16), bootstyle="success")
         lbEmail.grid(row=4, column=2, padx=20)
@@ -131,7 +131,7 @@ class FrDocentesEditor():
         self.txtEmail.grid(row=4, column=3, padx=20)
 
         btnGrabar = ttk.Button(self.root, text="Grabar", bootstyle="success", command=self.onBtnGrabar_onClick, width=20)
-        btnGrabar.grid(row=5, column=1, padx=20, pady=20)
+        btnGrabar.grid(row=5, column=1, padx=20, pady=5)
         btnCancelar = ttk.Button(self.root, text="Cancelar", bootstyle="danger", command=self.onBtnCancelar_onClick, width=20)
         btnCancelar.grid(row=5, column=3)
     
