@@ -12,7 +12,7 @@ class MdEstudiante(MdUsuario):
 
     NumeroCarne : str
     Foto : bytes
-    Vector : any
+    Vector : bytes
 
     def __init__(self, tipoDocumento, documento) -> None:
         super().__init__(tipoDocumento, documento)
@@ -31,6 +31,7 @@ class MdEstudiante(MdUsuario):
         objResult.Email = row.Email
         objResult.NumeroCarne = row.NumeroCarne
         objResult.Foto = row.Foto
+        objResult.Vector = row.Vector
         return objResult
     
     def ObtenerTodos() -> List[Self]:
@@ -50,19 +51,19 @@ class MdEstudiante(MdUsuario):
         ClDataBase.CloseConnection(cursor)
         return MdEstudiante.__CargarRegistro(objData)
     
-    def ObtenerImg(self) -> bytearray:
+    def CargarFoto(self) -> None:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute(f"SELECT * FROM MdEstudiante WHERE Id={self.id}")
+        cursor.execute(f"SELECT Foto FROM MdEstudiante WHERE Id={self.id}")
         objData = cursor.fetchone()
         ClDataBase.CloseConnection(cursor)
-        return objData.Foto
-    
-    #def ObtenerVector(self) -> bytearray:
+        self.Foto = objData.Foto
+
+    def CargarVector(self) -> None:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute(f"SELECT * FROM MdEstudiante WHERE Id={self.id}")
+        cursor.execute(f"SELECT Vector FROM MdEstudiante WHERE Id={self.id}")
         objData = cursor.fetchone()
         ClDataBase.CloseConnection(cursor)
-        return objData.Vector
+        self.Vector = objData.Vector
     
     def InsertarRegistro(self) -> None:
         cursor = ClDataBase.OpenConnection()
@@ -77,7 +78,8 @@ class MdEstudiante(MdUsuario):
            ,Password
            ,Activo
            ,NumeroCarne
-           ,Foto)
+           ,Foto
+           ,Vector)
      VALUES
            ({self.TipoDocumento}
            ,'{self.Documento}'
@@ -89,8 +91,9 @@ class MdEstudiante(MdUsuario):
            ,'123'
            ,1
            ,'{self.NumeroCarne}'
+           ,?
            ,?)"""
-        cursor.execute(strInsert, pyodbc.Binary(self.Foto))
+        cursor.execute(strInsert, pyodbc.Binary(self.Foto), pyodbc.Binary(self.Vector))
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
 
@@ -112,9 +115,10 @@ class MdEstudiante(MdUsuario):
             SegundoApellido= '{self.SegundoApellido}', 
             Email= '{self.Email}', 
             NumeroCarne= '{self.NumeroCarne}',
-            Foto=?
+            Foto=?,
+            Vector=?
             WHERE Id= {self.Id}"""  
-        cursor.execute(strUpdate, pyodbc.Binary(self.Foto))
+        cursor.execute(strUpdate, pyodbc.Binary(self.Foto), pyodbc.Binary(self.Vector))
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
     
