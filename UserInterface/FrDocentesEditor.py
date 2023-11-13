@@ -1,9 +1,14 @@
 import sys
 
+
+
 sys.path.append("Models")
+from MdAsignaturaDocente import MdAsignaturaDocente
 from ttkbootstrap.dialogs import Messagebox, MessageDialog
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
+from MdAsignatura import MdAsignatura
+from ttkbootstrap.tableview import Tableview
 from MdDocente import MdDocente
 from FcUtilidades import CentrarMensaje, CentrarPantalla
 
@@ -23,6 +28,7 @@ class FrDocentesEditor():
     txtSegundoApellido: ttk.Entry
     txtTarjetaProfesional: ttk.Entry
     txtEmail: ttk.Entry
+    cbAsignaturas: ttk.Combobox
 
     # endregion
 
@@ -51,11 +57,12 @@ class FrDocentesEditor():
 
         else:
             self.Docente = MdDocente.ObtenerPorId(self.idObjeto)
+            self.Docente.CargarAsignatura()
 
     def MostrarEditor(self):
         self.root = ttk.Toplevel(self.objPadre.root, topmost=True, resizable=(False, False))
         self.root.title("Creación/Edición Docente")
-        self.root.geometry(CentrarPantalla(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 950, 400))
+        self.root.geometry(CentrarPantalla(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 900, 700))
         
         lbId = ttk.Label(self.root, text="Id: ", font=('Helvetica', 16), bootstyle="success")
         lbId.grid(row=0, column=0, pady=5)
@@ -134,6 +141,43 @@ class FrDocentesEditor():
         btnGrabar.grid(row=5, column=1, padx=20, pady=5)
         btnCancelar = ttk.Button(self.root, text="Cancelar", bootstyle="danger", command=self.onBtnCancelar_onClick, width=20)
         btnCancelar.grid(row=5, column=3)
+
+        self.MostrarDetalle(self.CargarDatos())
+
+        if self.Docente.Id != 0:
+            self.cbAsignaturas = ttk.Combobox(master=self.root,  bootstyle="SUCCESS",  state="readonly", values=MdAsignaturaDocente.ObtenerAsignaturasFaltantes(self.Docente.Id), width=25)
+            self.cbAsignaturas.grid(row=7, column=0)
+            btnAgregarEstudiante = ttk.Button(self.root, bootstyle="success", text="Agregar", command=self.onBtnAgregarAsignatura_onClick)
+            btnAgregarEstudiante.grid(row=7, column=1)
+            btnAgregarEstudiante = ttk.Button(self.root, bootstyle="danger", text="Eliminar", command=self.onBtnEliminar_onClick)
+            btnAgregarEstudiante.grid(row=7, column=2)
+    
+    def MostrarDetalle(self, rowdata: list):
+        coldata = [
+            {"text": "Id", "stretch": True},
+            {"text": "Nombre", "stretch": True}
+        ]
+        self.table = Tableview(master=self.root,paginated=True, searchable=True, rowdata=rowdata, pagesize=20, height=20,
+                        bootstyle=PRIMARY, coldata=coldata)
+         
+        self.table.grid(row=6, column=0, sticky="we", columnspan=4)
+    
+    def CargarDatos(self) -> list:
+        rowdata = []
+        if self.Docente.Asignaturas != None:
+            for i in self.Docente.Asignaturas:
+                rowdata.append([i.Asignatura.Id, i.Asignatura.Nombre])
+        return rowdata
+        
+    
+    def ActualizarDatos(self) -> None:
+        self.cbAsignaturas["value"] = MdAsignaturaDocente.ObtenerAsignaturasFaltantes(self.Docente.Id)
+        self.cbAsignaturas.current(0)
+        self.Docente.CargarAsignatura()
+        rowdata = self.CargarDatos()
+        self.table.delete_rows()
+        self.table._build_table_rows(rowdata)
+        self.table.goto_first_page()
     
     # region Eventos
 
@@ -173,5 +217,20 @@ class FrDocentesEditor():
 
     def onBtnCancelar_onClick(self):
         self.root.destroy()
+
+    def onBtnEliminar_onClick(self):
+        keywords = CentrarMensaje(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 250, 180)
+        self.Docente.CargarAsignatura()
+        confirmacion = Messagebox.show_question(parent=self.root, message="¿Quiere eliminar el estudiante seleccionado de esta asignatura?", title="Confirmacion" ,buttons=["No:danger", "Yes: success"],**keywords)
+        if confirmacion == "Yes":
+            row = self.table.get_rows(selected=True)[0]
+            id = row.values[0]
+            MdAsignaturaDocente.EliminarRegistroIdAsignatura(self.Docente.Id, id)
+            self.ActualizarDatos()
+
+    def onBtnAgregarAsignatura_onClick(self):
+        obj = MdAsignaturaDocente(MdAsignatura.ObtenerPorNombre(self.cbAsignaturas.get()), self.Docente)
+        obj.InsertarRegistro()
+        self.ActualizarDatos()
 
     # endregion

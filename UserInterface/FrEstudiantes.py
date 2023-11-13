@@ -65,7 +65,7 @@ class FrEstudiantes():
             {"text": "NúmeroCarne", "stretch": False, "width":wdButton},
         ]
 
-        self.table = Tableview(master=self.root,paginated=True, searchable=True, rowdata=rowdata, bootstyle=PRIMARY,coldata=coldata)
+        self.table = Tableview(master=self.root,paginated=True, searchable=True, rowdata=rowdata,pagesize=50, height=30, bootstyle=PRIMARY,coldata=coldata)
         self.table.grid(row=2, column=0, sticky="we", columnspan=3)
 
     def ActualizarDatos(self) -> None:

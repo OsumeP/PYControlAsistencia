@@ -51,6 +51,13 @@ class MdEstudiante(MdUsuario):
         ClDataBase.CloseConnection(cursor)
         return MdEstudiante.__CargarRegistro(objData)
     
+    def ObtenerPorDocumento(documento: str) -> Self:
+        cursor = ClDataBase.OpenConnection()
+        cursor.execute(f"SELECT * FROM MdEstudiante WHERE Documento='{documento}'")
+        objData = cursor.fetchone()
+        ClDataBase.CloseConnection(cursor)
+        return MdEstudiante.__CargarRegistro(objData)
+    
     def CargarFoto(self) -> None:
         cursor = ClDataBase.OpenConnection()
         cursor.execute(f"SELECT Foto FROM MdEstudiante WHERE Id={self.id}")

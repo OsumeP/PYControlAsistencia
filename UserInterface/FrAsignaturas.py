@@ -53,8 +53,8 @@ class FrAsignaturas():
             {"text": "Nombre", "stretch": False, "width":wdButton},
         ]
 
-        self.table = Tableview(master=self.root,paginated=True, searchable=True, rowdata=rowdata, 
-                               bootstyle=PRIMARY, coldata=coldata)
+        self.table = Tableview(master=self.root,paginated=True, searchable=True, rowdata=rowdata, pagesize=50,
+                               bootstyle=PRIMARY, coldata=coldata, height=30)
         self.table.grid(row=2, column=0, sticky="we", columnspan=3)
 
     def CargarDatos(self) -> list[list]:

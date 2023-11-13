@@ -9,10 +9,12 @@ from MdUsuario import MdUsuario
 
 class MdAsignatura(MdBase):
     Nombre: str
+    Estudiantes: List
 
     def __init__(self,nombre: str) -> None:
         super().__init__()
         self.Nombre = nombre
+        self.Estudiantes = None
 
 
     def ObtenerTodos() -> List[Self]:
@@ -27,7 +29,7 @@ class MdAsignatura(MdBase):
     
     def ObtenerPorNombre(name: str) -> Self:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute(f"SELECT * FROM MdAsignatura WHERE Nombre={name}")
+        cursor.execute(f"SELECT * FROM MdAsignatura WHERE Nombre='{name}'")
         objData = cursor.fetchone()
         ClDataBase.CloseConnection(cursor)
         return MdAsignatura.__CargarRegistro(objData)
@@ -38,7 +40,7 @@ class MdAsignatura(MdBase):
         objData = cursor.fetchone()
         ClDataBase.CloseConnection(cursor)
         return MdAsignatura.__CargarRegistro(objData)
-    
+
     def InsertarRegistro(self) -> None:
         cursor = ClDataBase.OpenConnection()
         strInsert = f"""INSERT INTO MdAsignatura
@@ -78,3 +80,7 @@ class MdAsignatura(MdBase):
         objResult = MdAsignatura(row.Nombre)
         objResult.EstablecerId(row.Id)
         return objResult
+    
+    def CargarEstudiantes(self)-> None:
+        from MdAsignaturaEstudiante import MdAsignaturaEstudiante
+        self.Estudiantes = MdAsignaturaEstudiante.ObtenerTodosPorIdAsignatura(self.Id)

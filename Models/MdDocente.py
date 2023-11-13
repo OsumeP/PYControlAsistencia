@@ -1,6 +1,6 @@
 import sys
 from EnEnum import EnTipoDocumento
-
+from MdAsignatura import MdAsignatura
 from MdInicioSesion import MdInicioSesion
 sys.path.append("Repository")
 import pyodbc
@@ -12,9 +12,11 @@ from ClDataBase import ClDataBase
 class MdDocente(MdUsuario):
 
     TarjetaProfesional : str
+    Asignaturas: list[MdAsignatura]
 
     def __init__(self, tipoDocumento, documento: str) -> None:
         super().__init__(tipoDocumento, documento)
+        self.Asignaturas = None
 
     def ObtenerTodos() -> List[Self]:
         cursor = ClDataBase.OpenConnection()
@@ -111,3 +113,6 @@ class MdDocente(MdUsuario):
         objValor = cursor.fetchval()
         return objValor != None
     
+    def CargarAsignatura(self) -> None:
+        from MdAsignaturaDocente import MdAsignaturaDocente
+        self.Asignaturas = MdAsignaturaDocente.ObtenerTodosPorIdDocente(self.Id)
