@@ -56,6 +56,7 @@ class FrEstudiantesEditor():
 
         else:
             self.Estudiante = MdEstudiante.ObtenerPorId(self.idObjeto)
+            self.Estudiante.CargarFoto()
 
     def MostrarEditor(self):
         self.root = ttk.Toplevel(self.objPadre.root, resizable=(False, False))
@@ -216,13 +217,14 @@ class FrEstudiantesEditor():
     
     def onTomarFoto(self):
         self.Estudiante.AsignarFotoVector()
+        self.MostrarFoto()
         self.ValidarFoto()
 
     def onSubirFoto(self):
         pathName = filedialog.askopenfilename(parent=self.root)
         if not(pathName == ''):
             self.Estudiante.SubirFoto(pathName)
-            self.MostrarFoto()
             self.ValidarFoto()
+            self.MostrarFoto()
 
     # endregion

@@ -34,7 +34,7 @@ class FrEstudiantes():
     def CrearToolBar(self)->None:
         self.root = ttk.Frame(self.ObjMain.nbTabControl)
         self.ObjMain.nbTabControl.add(self.root, text='Administración de Estudiantes')
-        lbTitulo = ttk.Label(self.root, text="Administración de Docentes",font=('Helvetica', 18), bootstyle="success")
+        lbTitulo = ttk.Label(self.root, text="Administración de Estudiantes",font=('Helvetica', 18), bootstyle="success")
         lbTitulo.grid(row=0, column=0, columnspan=3, pady=5)
         wdButton = int((self.root.winfo_screenwidth() - 120) / 6 /3)
         btnAgregar = ttk.Button(self.root,text="Agregar", bootstyle='success', command=self.onBtnAgregarRegistro_onClick, width=wdButton)
@@ -45,9 +45,9 @@ class FrEstudiantes():
         btnEliminar.grid(row=1, column=2, padx=5, pady=5)
 
     def CargarDatos(self) -> list[list]:
-        listaAsignaturas = MdEstudiante.ObtenerTodos()
+        listaEstudiantes = MdEstudiante.ObtenerTodos()
         rowdata = []
-        for i in listaAsignaturas:
+        for i in listaEstudiantes:
             rowdata.append([i.Id, i.ObtenerTipoDocumentoStr(), i.Documento, i.PrimerNombre, i.SegundoNombre, i.PrimerApellido, i.SegundoApellido, i.Email, i.NumeroCarne])
         return rowdata
 

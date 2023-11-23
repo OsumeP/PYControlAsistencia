@@ -7,6 +7,7 @@ import pyodbc
 from typing import (List, Self)
 from MdUsuario import MdUsuario
 from ClDataBase import ClDataBase
+import numpy
 
 class MdEstudiante(MdUsuario):
 
@@ -30,13 +31,11 @@ class MdEstudiante(MdUsuario):
         objResult.SegundoApellido = row.SegundoApellido
         objResult.Email = row.Email
         objResult.NumeroCarne = row.NumeroCarne
-        objResult.Foto = row.Foto
-        objResult.Vector = row.Vector
         return objResult
     
     def ObtenerTodos() -> List[Self]:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute("SELECT * FROM MdEstudiante")
+        cursor.execute("SELECT Id, PrimerNombre, SegundoNombre, PrimerApellido, SegundoApellido, Documento, TipoDocumento, Email, NumeroCarne FROM MdEstudiante")
         cursorData = cursor.fetchall()
         listResult = list()
         for i in cursorData:
@@ -60,18 +59,19 @@ class MdEstudiante(MdUsuario):
     
     def CargarFoto(self) -> None:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute(f"SELECT Foto FROM MdEstudiante WHERE Id={self.id}")
-        objData = cursor.fetchone()
+        cursor.execute(f"SELECT Foto FROM MdEstudiante WHERE Id={self.Id}")
+        objData = cursor.fetchval()
         ClDataBase.CloseConnection(cursor)
-        self.Foto = objData.Foto
+        self.Foto = objData
 
     def CargarVector(self) -> None:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute(f"SELECT Vector FROM MdEstudiante WHERE Id={self.id}")
-        objData = cursor.fetchone()
+        cursor.execute(f"SELECT Vector FROM MdEstudiante WHERE Id={self.Id}")
+        objData = cursor.fetchval()
         ClDataBase.CloseConnection(cursor)
-        self.Vector = objData.Vector
-    
+        vector = numpy.frombuffer(objData)
+        self.Vector = vector 
+
     def InsertarRegistro(self) -> None:
         cursor = ClDataBase.OpenConnection()
         strInsert = f"""INSERT INTO MdEstudiante

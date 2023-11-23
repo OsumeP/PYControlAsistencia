@@ -7,9 +7,15 @@ class MdFaceRecognition():
     rostro: any
     vector: any
     objEstudiante: MdEstudiante
+    listaVector: list
+    listaNombre: list
 
-    def __init__(self, estudiante: MdEstudiante) -> None:
-        self.objEstudiante = estudiante
+    def __init__(self, estudiante: MdEstudiante = None, Vectores: list = None, Nombres: list = None) -> None:
+        if estudiante != None:
+            self.objEstudiante = estudiante
+        else:
+            self.listaVector = Vectores
+            self.listaNombre = Nombres
 
     def CapturarRostro(self):
         capture = cv2.VideoCapture(0)
@@ -30,7 +36,7 @@ class MdFaceRecognition():
                     isaa, foto = cv2.imencode(ext='.jpg',img=self.rostro)
                     self.objEstudiante.Foto = foto.tobytes()
                     self.objEstudiante.Vector = self.vector.tobytes()
-                    capture.release
+                    capture.release()
                     cv2.destroyAllWindows()
             cv2.rectangle(frame,(10,5),(450,25),(255,255,255),-1)
             cv2.putText(frame,'Presione s para almacenar el rostro encontrado',(10,20),2,0.5,(128,0,0),1)
@@ -56,3 +62,37 @@ class MdFaceRecognition():
 
         except:
             pass
+    
+    def ReconocimientoFacial(self):
+        faceClassif = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+        cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
+        while True:
+            ret, frame = cap.read()
+            if ret == False: break
+            orig = frame.copy()
+            faces = faceClassif.detectMultiScale(frame, 1.05, 5)
+
+            for (x, y, w, h) in faces:
+                face = orig[y: y+h, x:x+w]
+                face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+                actualFaceEncoding = face_recognition.face_encodings(face, known_face_locations=[(0,w,h,0)])[0]
+                result = face_recognition.compare_faces(self.listaVector, actualFaceEncoding)
+                if True in result:
+                    index = result.index(True)
+                    name = self.listaNombre[index]
+                    color = (125, 220, 0)
+                else:
+                    name = "Desconocido"
+                    color = (50, 50, 255)
+
+                cv2.rectangle(frame, (x,y+h), (x + w, y + h + 30), color, 2)
+                cv2.rectangle(frame, (x,y), (x+w, y+h), color, 2)
+                cv2.putText(frame,name,(x, y + h + 25), 2, 1, (255, 255, 255), 2, lineType=cv2.LINE_AA)
+            cv2.imshow("Frame", frame)
+
+            k = cv2.waitKey(1) & 0xFF
+            if k == 27:
+                break
+        cap.release()
+        cv2.destroyAllWindows()

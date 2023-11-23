@@ -104,6 +104,7 @@ class MdDocente(MdUsuario):
         strSearch = f"SELECT Id FROM MdDocente WHERE Documento='{mdInicioSesion.Usuario}' AND Password='{mdInicioSesion.Password}' AND Activo=1"
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
+        mdInicioSesion.Id = objValor
         return objValor != None
     
     def ValidarRepeticion(self) -> bool:
@@ -116,3 +117,11 @@ class MdDocente(MdUsuario):
     def CargarAsignatura(self) -> None:
         from MdAsignaturaDocente import MdAsignaturaDocente
         self.Asignaturas = MdAsignaturaDocente.ObtenerTodosPorIdDocente(self.Id)
+
+    def ObtenerNombresAsignaturas(self) -> List[str]:
+        cursor = ClDataBase.OpenConnection()
+        strSearch = f"SELECT Nombre FROM MdAsignatura A INNER JOIN MdAsignaturaDocente B ON A.Id = B.Id_Asignatura WHERE B.Id_Docente = {self.Id}"
+        cursor.execute(strSearch)
+        rows = cursor.fetchall()
+        Nombres = [row.Nombre for row in rows]
+        return Nombres
