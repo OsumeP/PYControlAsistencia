@@ -56,6 +56,7 @@ class FrEstudiantesEditor():
 
         else:
             self.Estudiante = MdEstudiante.ObtenerPorId(self.idObjeto)
+            self.Estudiante.CargarVector()
             self.Estudiante.CargarFoto()
 
     def MostrarEditor(self):

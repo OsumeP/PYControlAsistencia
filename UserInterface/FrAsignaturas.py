@@ -79,10 +79,13 @@ class FrAsignaturas():
         keywords = CentrarMensaje(self.root.winfo_screenwidth(), self.root.winfo_screenheight(), 250, 180)
         confirmacion = Messagebox.show_question(parent=self.ObjMain.root, message="¿Quiere eliminar el registro seleccionado?", title="Confirmacion" ,buttons=["No:danger", "Yes: success"],**keywords)
         if confirmacion == "Yes":
-            row = self.table.get_rows(selected=True)[0]
-            id = row.values[0]
-            MdAsignatura.EliminarRegistro(id)
-            self.ActualizarDatos()
+            try:
+                row = self.table.get_rows(selected=True)[0]
+                id = row.values[0]
+                MdAsignatura.EliminarRegistro(id)
+                self.ActualizarDatos()
+            except:
+                pass
 
     def onBtnEditar_onClick(self):
         row = self.table.get_rows(selected=True)[0]

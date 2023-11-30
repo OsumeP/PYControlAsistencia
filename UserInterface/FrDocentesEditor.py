@@ -223,10 +223,13 @@ class FrDocentesEditor():
         self.Docente.CargarAsignatura()
         confirmacion = Messagebox.show_question(parent=self.root, message="¿Quiere eliminar el estudiante seleccionado de esta asignatura?", title="Confirmacion" ,buttons=["No:danger", "Yes: success"],**keywords)
         if confirmacion == "Yes":
-            row = self.table.get_rows(selected=True)[0]
-            id = row.values[0]
-            MdAsignaturaDocente.EliminarRegistroIdAsignatura(self.Docente.Id, id)
-            self.ActualizarDatos()
+            try:
+                row = self.table.get_rows(selected=True)[0]
+                id = row.values[0]
+                MdAsignaturaDocente.EliminarRegistroIdAsignatura(self.Docente.Id, id)
+                self.ActualizarDatos()
+            except:
+                pass
 
     def onBtnAgregarAsignatura_onClick(self):
         obj = MdAsignaturaDocente(MdAsignatura.ObtenerPorNombre(self.cbAsignaturas.get()), self.Docente)

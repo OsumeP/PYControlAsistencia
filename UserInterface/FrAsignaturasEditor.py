@@ -100,8 +100,12 @@ class FrAsignaturasEditor():
         
     
     def ActualizarDatos(self) -> None:
-        self.cbEstudiantes["value"] = MdAsignaturaEstudiante.ObtenerEstudiantesFaltantes(self.ObjId)
-        self.cbEstudiantes.current(0)
+        listaEstudiantes = MdAsignaturaEstudiante.ObtenerEstudiantesFaltantes(self.ObjId)
+        self.cbEstudiantes["value"] = listaEstudiantes
+        if len(listaEstudiantes) > 0:
+            self.cbEstudiantes.current(0)
+        else:
+            self.cbEstudiantes["value"] = []
         self.Asignatura.CargarEstudiantes()
         rowdata = self.CargarDatos()
         self.table.delete_rows()
