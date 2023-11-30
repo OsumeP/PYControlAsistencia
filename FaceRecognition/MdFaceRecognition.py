@@ -9,6 +9,7 @@ class MdFaceRecognition():
     objEstudiante: MdEstudiante
     listaVector: list
     listaNombre: list
+    lsAsistencia: list[any]
 
     def __init__(self, estudiante: MdEstudiante = None, Vectores: list = None, Nombres: list = None) -> None:
         if estudiante != None:
@@ -16,6 +17,7 @@ class MdFaceRecognition():
         else:
             self.listaVector = Vectores
             self.listaNombre = Nombres
+            pass
 
     def CapturarRostro(self):
         capture = cv2.VideoCapture(0)
@@ -24,7 +26,7 @@ class MdFaceRecognition():
             confirm, frame = capture.read()
             if confirm == False: break
             grayImg = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            faces = clasificadorFace.detectMultiScale(grayImg, 1.05, 8)
+            faces = clasificadorFace.detectMultiScale(grayImg, 1.1, 8)
             order = cv2.waitKey(1)
             if order == 27:
                 break
@@ -71,16 +73,20 @@ class MdFaceRecognition():
             ret, frame = cap.read()
             if ret == False: break
             orig = frame.copy()
-            faces = faceClassif.detectMultiScale(frame, 1.05, 5)
+            faces = faceClassif.detectMultiScale(frame, 1.1, 8)
 
             for (x, y, w, h) in faces:
                 face = orig[y: y+h, x:x+w]
                 face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
                 actualFaceEncoding = face_recognition.face_encodings(face, known_face_locations=[(0,w,h,0)])[0]
-                result = face_recognition.compare_faces(self.listaVector, actualFaceEncoding)
+                result = face_recognition.compare_faces(self.listaVector, actualFaceEncoding, 0.4)
                 if True in result:
                     index = result.index(True)
                     name = self.listaNombre[index]
+                    self.lsAsistencia[index].ActualizarRegistro()
+                    self.lsAsistencia.pop(index)
+                    self.listaVector.pop(index)
+                    self.listaNombre.pop(index)
                     color = (125, 220, 0)
                 else:
                     name = "Desconocido"

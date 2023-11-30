@@ -134,6 +134,7 @@ class MdEstudiante(MdUsuario):
         strSearch = f"SELECT Id FROM MdEstudiante WHERE Documento='{mdInicioSesion.Usuario}' AND Password='{mdInicioSesion.Password}' AND Activo=1"
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
+        mdInicioSesion.Id = objValor
         return objValor != None
     
     def ValidarRepeticion(self) -> bool:

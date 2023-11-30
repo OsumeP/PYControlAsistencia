@@ -10,6 +10,7 @@ from ttkbootstrap.tableview import Tableview
 from MdAsignatura import MdAsignatura
 from MdFaceRecognition import MdFaceRecognition
 from MdClase import MdClase
+from MdAsistencia import MdAsistencia
 
 class FrClases():
 
@@ -19,11 +20,12 @@ class FrClases():
     lbFecha: ttk.Label
     table: Tableview
     cbClases: ttk.Combobox
-    vectores: list
-    nombres:list
     raw_TS: datetime
     objAsignatura: MdAsignatura
-
+    objReconocedor: MdFaceRecognition
+    ids = []
+    objClase = MdClase
+    lsAsistencias: list[MdAsistencia]
     # region Constructores
 
     def __init__(self, objMain: any, IdUsuario) -> None:
@@ -51,18 +53,28 @@ class FrClases():
         self.ActualizarHora()
         self.DibujarTabla([])
 
-    def CargarDatos(self) -> list[list]:
-        self.objAsignatura = MdAsignatura.ObtenerPorNombre(self.cbClases.get())
-        self.objAsignatura.CargarEstudiantes()
-        self.vectores = []
-        self.nombres= []
-        rowdata = []
+    def CargarDatos(self) -> None:
+        self.ids = []
+        vectores = []
+        nombres= []
         for i in self.objAsignatura.Estudiantes:
             estudiante = i.Estudiante
-            rowdata.append([estudiante.Id, estudiante.Documento, estudiante.PrimerNombre, estudiante.SegundoNombre, estudiante.PrimerApellido, estudiante.SegundoApellido, False])
-            self.nombres.append(estudiante.PrimerNombre + " " + estudiante.PrimerApellido)
+            nombres.append(estudiante.PrimerNombre + " " + estudiante.PrimerApellido)
             estudiante.CargarVector()
-            self.vectores.append(estudiante.Vector)
+            vectores.append(estudiante.Vector)
+            self.ids.append(estudiante.Id)
+        self.objReconocedor = MdFaceRecognition(Vectores=vectores, Nombres=nombres)
+    
+    def LlenarTabla(self) -> list[list]:
+        nwAsistencia = MdAsistencia.ObtenerPorClase(self.objClase.Id)
+        rowdata = []
+        for i in nwAsistencia:
+            estudiante = i.Estudiante
+            if i.Asistencia == 0:
+                i.Asistencia = False
+            else:
+                i.Asistencia = True
+            rowdata.append([estudiante.Id, estudiante.Documento, estudiante.PrimerNombre, estudiante.SegundoNombre, estudiante.PrimerApellido, estudiante.SegundoApellido, i.Asistencia])
         return rowdata
 
     def DibujarTabla(self, rowdata: list):
@@ -80,10 +92,24 @@ class FrClases():
         self.table.grid(row=2, column=0, columnspan=3, sticky="we")
 
     def ActualizarDatos(self) -> None:
-        rowdata = self.CargarDatos()
+        rowdata = self.LlenarTabla()
         self.table.delete_rows()
         self.table._build_table_rows(rowdata)
         self.table.goto_first_page()
+
+    def GenerarRegistros(self):
+        self.CargarDatos()
+        self.objClase = MdClase(self.Docente, self.objAsignatura, self.raw_TS)
+        self.objClase.InsertarRegistro()
+        self.objClase.RefrescarId()
+        asistencia = MdAsistencia(self.objClase)
+        asistencia.GenerarRegistrosClase(self.ids)
+        self.listaAsistencia = MdAsistencia.ObtenerPorClase(self.objClase.Id)
+        self.objReconocedor.lsAsistencia = self.listaAsistencia
+        self.objReconocedor.ReconocimientoFacial()
+        self.objClase.FechaFinal = self.raw_TS.strftime('%Y-%m-%d %H:%M:%S')
+        self.objClase.ActualizarRegistro()
+        self.ActualizarDatos()
 
     def ActualizarHora(self):
         self.raw_TS = datetime.now()
@@ -95,12 +121,9 @@ class FrClases():
 
     #region Eventos
     def onBtnIniciar_onClick(self):
-        self.ActualizarDatos()
-        objClase = MdClase(self.Docente, self.objAsignatura, self.raw_TS)
-        reconocedor = MdFaceRecognition(Vectores=self.vectores, Nombres=self.nombres)
-        reconocedor.ReconocimientoFacial()
-        objClase.FechaFinal = self.raw_TS.strftime('%Y-%m-%d %H:%M:%S')
-        objClase.InsertarRegistro()
+        self.objAsignatura = MdAsignatura.ObtenerPorNombre(self.cbClases.get())
+        self.objAsignatura.CargarEstudiantes()
+        self.GenerarRegistros()
 
 
     #endregion

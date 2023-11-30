@@ -27,13 +27,11 @@ class MdClase(MdBase):
         strInsert = f"""INSERT INTO MdClase
            (Id_Asignatura
            ,Id_Docente
-           ,FechaInicio
-           ,FechaFinal)
+           ,FechaInicio)
      VALUES
            ({self.Asignatura.Id}
            , {self.Docente.Id}
-           ,'{self.FechaInicial}'
-           ,'{self.FechaFinal}')"""
+           ,'{self.FechaInicial}')"""
         cursor.execute(strInsert)
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
@@ -54,6 +52,26 @@ class MdClase(MdBase):
         objData = cursor.fetchone()
         ClDataBase.CloseConnection(cursor)
         return MdClase.__CargarRegistro(objData)
+    
+    def RefrescarId(self):
+        cursor = ClDataBase.OpenConnection()
+        cursor.execute(f"SELECT Id FROM MdClase WHERE FechaInicio='{self.FechaInicial}'")
+        Id = cursor.fetchval()
+        ClDataBase.CloseConnection(cursor)
+        self.Id = Id
+    
+    def ActualizarRegistro(self):
+        cursor = ClDataBase.OpenConnection()
+        strUpdate = f"""UPDATE MdClase SET 
+            Id_Asignatura= {self.Asignatura.Id}
+            ,Id_Docente= {self.Docente.Id}
+            ,FechaInicio = '{self.FechaInicial}'
+            ,FechaFinal = '{self.FechaFinal}'
+            WHERE Id= {self.Id}"""  
+        cursor.execute(strUpdate)
+        cursor.commit()
+        ClDataBase.CloseConnection(cursor)
+
     
     def __CargarRegistro(row: pyodbc.Row) -> Self:
         if row == None:

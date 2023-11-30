@@ -10,6 +10,7 @@ from FrAsignaturas import FrAsignaturas
 from FrEstudiantes import FrEstudiantes
 from FrDocentes import FrDocentes
 from FrClases import FrClases
+from FrAsistencia import FrAsistencia
 
 class FrMain():
 
@@ -82,7 +83,7 @@ class FrMain():
             case EnTipoUsuario.Docente:
                 self.CrearTabClases()
             case EnTipoUsuario.Estudiante:
-                pass
+                self.CrearTabAsistencia()
 
     def onAfterLogin(self, mdInicioSesion: MdInicioSesion):
         self.objInicioSesion = mdInicioSesion
@@ -98,6 +99,9 @@ class FrMain():
 
     def CrearTabClases(self):
         FrClases(self, self.objInicioSesion.Id)
+
+    def CrearTabAsistencia(self):
+        FrAsistencia(self.objInicioSesion.Id, self)
     #endregion
 
     # region Eventos
