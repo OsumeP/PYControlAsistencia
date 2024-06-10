@@ -2,19 +2,23 @@ import sys
 
 from MdInicioSesion import MdInicioSesion
 sys.path.append("Repository")
+sys.path.append("FaceRecognition")
 import pyodbc
 from typing import (List, Self)
 from MdUsuario import MdUsuario
 from ClDataBase import ClDataBase
+import numpy
 
 class MdEstudiante(MdUsuario):
 
     NumeroCarne : str
-    Foto : bytearray
-    Vector : any
+    Foto : bytes
+    Vector : bytes
 
     def __init__(self, tipoDocumento, documento) -> None:
         super().__init__(tipoDocumento, documento)
+        self.Foto = None
+        self.Vector = None
 
     def __CargarRegistro(row: pyodbc.Row) -> Self:
         if row == None:
@@ -30,8 +34,8 @@ class MdEstudiante(MdUsuario):
         return objResult
     
     def ObtenerTodos() -> List[Self]:
-        cursor = ClDataBase.AbrirConexion()
-        cursor.execute("SELECT * FROM MdEstudiante")
+        cursor = ClDataBase.OpenConnection()
+        cursor.execute("SELECT Id, PrimerNombre, SegundoNombre, PrimerApellido, SegundoApellido, Documento, TipoDocumento, Email, NumeroCarne FROM MdEstudiante")
         cursorData = cursor.fetchall()
         listResult = list()
         for i in cursorData:
@@ -46,20 +50,28 @@ class MdEstudiante(MdUsuario):
         ClDataBase.CloseConnection(cursor)
         return MdEstudiante.__CargarRegistro(objData)
     
-    def ObtenerImg(self) -> bytearray:
+    def ObtenerPorDocumento(documento: str) -> Self:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute(f"SELECT * FROM MdEstudiante WHERE Id={self.id}")
+        cursor.execute(f"SELECT * FROM MdEstudiante WHERE Documento='{documento}'")
         objData = cursor.fetchone()
         ClDataBase.CloseConnection(cursor)
-        return objData.Foto
+        return MdEstudiante.__CargarRegistro(objData)
     
-    #def ObtenerVector(self) -> bytearray:
+    def CargarFoto(self) -> None:
         cursor = ClDataBase.OpenConnection()
-        cursor.execute(f"SELECT * FROM MdEstudiante WHERE Id={self.id}")
-        objData = cursor.fetchone()
+        cursor.execute(f"SELECT Foto FROM MdEstudiante WHERE Id={self.Id}")
+        objData = cursor.fetchval()
         ClDataBase.CloseConnection(cursor)
-        return objData.Vector
-    
+        self.Foto = objData
+
+    def CargarVector(self) -> None:
+        cursor = ClDataBase.OpenConnection()
+        cursor.execute(f"SELECT Vector FROM MdEstudiante WHERE Id={self.Id}")
+        objData = cursor.fetchval()
+        ClDataBase.CloseConnection(cursor)
+        vector = numpy.frombuffer(objData)
+        self.Vector = vector 
+
     def InsertarRegistro(self) -> None:
         cursor = ClDataBase.OpenConnection()
         strInsert = f"""INSERT INTO MdEstudiante
@@ -72,7 +84,9 @@ class MdEstudiante(MdUsuario):
            ,Email
            ,Password
            ,Activo
-           ,NumeroCarne)
+           ,NumeroCarne
+           ,Foto
+           ,Vector)
      VALUES
            ({self.TipoDocumento}
            ,'{self.Documento}'
@@ -83,14 +97,16 @@ class MdEstudiante(MdUsuario):
            ,'{self.Email}'
            ,'123'
            ,1
-           ,'{self.NumeroCarne}')"""
-        cursor.execute(strInsert)
+           ,'{self.NumeroCarne}'
+           ,?
+           ,?)"""
+        cursor.execute(strInsert, pyodbc.Binary(self.Foto), pyodbc.Binary(self.Vector))
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
 
-    def EliminarRegistro(self):
+    def EliminarRegistro(id):
         cursor = ClDataBase.OpenConnection()
-        strDelete = f"""DELETE FROM MdEstudiante WHERE Id={self.Id}"""
+        strDelete = f"""DELETE FROM MdEstudiante WHERE Id={id}"""
         cursor.execute(strDelete)
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
@@ -105,9 +121,11 @@ class MdEstudiante(MdUsuario):
             PrimerApellido= '{self.PrimerApellido}', 
             SegundoApellido= '{self.SegundoApellido}', 
             Email= '{self.Email}', 
-            NumeroCarne= '{self.NumeroCarne}'
+            NumeroCarne= '{self.NumeroCarne}',
+            Foto=?,
+            Vector=?
             WHERE Id= {self.Id}"""  
-        cursor.execute(strUpdate)
+        cursor.execute(strUpdate, pyodbc.Binary(self.Foto), pyodbc.Binary(self.Vector))
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
     
@@ -116,4 +134,22 @@ class MdEstudiante(MdUsuario):
         strSearch = f"SELECT Id FROM MdEstudiante WHERE Documento='{mdInicioSesion.Usuario}' AND Password='{mdInicioSesion.Password}' AND Activo=1"
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
+        mdInicioSesion.Id = objValor
         return objValor != None
+    
+    def ValidarRepeticion(self) -> bool:
+        cursor = ClDataBase.OpenConnection()
+        strSearch = f"SELECT Id FROM MdEstudiante WHERE Documento='{self.Documento}' AND Id!={self.Id}"
+        cursor.execute(strSearch)
+        objValor = cursor.fetchval()
+        return objValor != None
+    
+    def AsignarFotoVector(self):
+        from MdFaceRecognition import MdFaceRecognition
+        reconocedor = MdFaceRecognition(self)
+        reconocedor.CapturarRostro()
+    
+    def SubirFoto(self, filePath: str):
+        from MdFaceRecognition import MdFaceRecognition
+        reconocedor = MdFaceRecognition(self)
+        reconocedor.AnalizarImagen(filePath)

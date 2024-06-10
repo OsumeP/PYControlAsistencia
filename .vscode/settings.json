@@ -1,6 +1,7 @@
 {
     "python.analysis.extraPaths": [
         "./Repository",
-        "./Models"
+        "./Models",
+        "./FaceRecognition"
     ]
 }

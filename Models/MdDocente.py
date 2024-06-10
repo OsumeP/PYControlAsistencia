@@ -1,6 +1,6 @@
 import sys
 from EnEnum import EnTipoDocumento
-
+from MdAsignatura import MdAsignatura
 from MdInicioSesion import MdInicioSesion
 sys.path.append("Repository")
 import pyodbc
@@ -12,12 +12,14 @@ from ClDataBase import ClDataBase
 class MdDocente(MdUsuario):
 
     TarjetaProfesional : str
+    Asignaturas: list[MdAsignatura]
 
     def __init__(self, tipoDocumento, documento: str) -> None:
         super().__init__(tipoDocumento, documento)
+        self.Asignaturas = None
 
     def ObtenerTodos() -> List[Self]:
-        cursor = ClDataBase.AbrirConexion()
+        cursor = ClDataBase.OpenConnection()
         cursor.execute("SELECT * FROM MdDocente")
         cursorData = cursor.fetchall()
         listResult = list()
@@ -74,9 +76,9 @@ class MdDocente(MdUsuario):
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
 
-    def EliminarRegistro(self):
+    def EliminarRegistro(id: int):
         cursor = ClDataBase.OpenConnection()
-        strDelete = f"""DELETE FROM MdDocente WHERE Id={self.Id}"""
+        strDelete = f"""DELETE FROM MdDocente WHERE Id={id}"""
         cursor.execute(strDelete)
         cursor.commit()
         ClDataBase.CloseConnection(cursor)
@@ -102,5 +104,24 @@ class MdDocente(MdUsuario):
         strSearch = f"SELECT Id FROM MdDocente WHERE Documento='{mdInicioSesion.Usuario}' AND Password='{mdInicioSesion.Password}' AND Activo=1"
         cursor.execute(strSearch)
         objValor = cursor.fetchval()
+        mdInicioSesion.Id = objValor
         return objValor != None
     
+    def ValidarRepeticion(self) -> bool:
+        cursor = ClDataBase.OpenConnection()
+        strSearch = f"SELECT Id FROM MdDocente WHERE Documento='{self.Documento}' AND Id!={self.Id}"
+        cursor.execute(strSearch)
+        objValor = cursor.fetchval()
+        return objValor != None
+    
+    def CargarAsignatura(self) -> None:
+        from MdAsignaturaDocente import MdAsignaturaDocente
+        self.Asignaturas = MdAsignaturaDocente.ObtenerTodosPorIdDocente(self.Id)
+
+    def ObtenerNombresAsignaturas(self) -> List[str]:
+        cursor = ClDataBase.OpenConnection()
+        strSearch = f"SELECT Nombre FROM MdAsignatura A INNER JOIN MdAsignaturaDocente B ON A.Id = B.Id_Asignatura WHERE B.Id_Docente = {self.Id}"
+        cursor.execute(strSearch)
+        rows = cursor.fetchall()
+        Nombres = [row.Nombre for row in rows]
+        return Nombres
